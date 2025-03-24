@@ -24,7 +24,7 @@ app.use(express.json()); // Ensure Express can parse JSON
 app.use(cors()); // Enable CORS
 
 // Corrected Route Imports
-const taskRoutes = require('./src/routes/task'); // Fixed path
+const taskRoutes = require('./src/routes/tasks'); // Correct path to the tasks.js file
 const dateRoute = require('./src/routes/DateRoute'); // Ensure DateRoute exists
 
 // Use routes

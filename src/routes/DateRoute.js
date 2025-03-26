@@ -1,21 +1,22 @@
-// // DateRoute.js
 // const express = require('express');
 // const router = express.Router();
 // const dateController = require('../controllers/date.controller'); // Import the controller
 
-// // Define a GET route for current date
+// // Define a GET route for the current date
 // router.get('/', dateController.getCurrentDate);
 
-// module.exports = router;
+// // Define a GET route for the next day's date (New Addition)
+// router.get('/next-day', dateController.getNextDayDate);
 
-const express = require('express');
+// module.exports = router;
+import express from 'express';
 const router = express.Router();
-const dateController = require('../controllers/date.controller'); // Import the controller
+import { getCurrentDate, getNextDayDate } from '../controllers/date.controller.js';
 
 // Define a GET route for the current date
-router.get('/', dateController.getCurrentDate);
+router.get('/', getCurrentDate);
 
-// Define a GET route for the next day's date (New Addition)
-router.get('/next-day', dateController.getNextDayDate);
+// Define a GET route for the next day's date
+router.get('/next-day', getNextDayDate);
 
-module.exports = router;
+export default router; // Use ES module export syntax

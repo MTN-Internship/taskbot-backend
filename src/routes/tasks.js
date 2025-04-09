@@ -86,53 +86,26 @@
 //         res.status(500).json({ status: 500, message: "Internal Server Error", error: error.message });
 //     }
 // });
-import express from 'express';
+import express from "express";
+import Task from "../models/Task.js"; // Import the model
+
 const router = express.Router();
 
-// Utility function to get tomorrow's date
-function getTomorrow() {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    return tomorrow.toISOString().split('T')[0]; // Format YYYY-MM-DD
-}
-
-// Utility function to get yesterday's date
-function getYesterday() {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    return yesterday.toISOString().split('T')[0]; // Format YYYY-MM-DD
-}
-
-// GET endpoint to fetch next day's tasks (only returns the next day date)
-router.get('/next-day', async (req, res) => {
-    console.log('GET /tasks/next-day route hit'); // Debugging log
-    try {
-        const tomorrowDate = getTomorrow();
-
-        res.json({
-            status: 200,
-            message: tomorrowDate // Return only the next day's date
-        });
-    } catch (error) {
-        console.error('Error:', error); // Debugging log
-        res.status(500).json({ status: 500, message: "Internal Server Error", error: error.message });
+router.post("/", async (req, res) => {
+  try {
+    const { title, description } = req.body;
+    if (!title || !description) {
+      return res.status(400).json({ message: "Title and description are required" });
     }
-});
 
-// GET endpoint to fetch previous day's tasks (only returns the previous day date)
-router.get('/previous-day', async (req, res) => {
-    console.log('GET /tasks/previous-day route hit'); // Debugging log
-    try {
-        const yesterdayDate = getYesterday();
+    const newTask = new Task({ title, description });
+    await newTask.save();
 
-        res.json({
-            status: 200,
-            message: yesterdayDate // Return only the previous day's date
-        });
-    } catch (error) {
-        console.error('Error:', error); // Debugging log
-        res.status(500).json({ status: 500, message: "Internal Server Error", error: error.message });
-    }
+    res.status(201).json({ message: "Task created successfully", task: newTask });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
 });
 
 export default router;
+

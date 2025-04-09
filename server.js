@@ -44,46 +44,65 @@
 // app.listen(PORT, () => {
 //   console.log(`Server is running on http://localhost:${PORT}`);
 // });
-import dotenv from 'dotenv';
-dotenv.config(); // Load environment variables
+// New endpoint to display the predefined message and data
+// import express from 'express';
+// import cors from 'cors';
+// import dotenv from 'dotenv';
+// import dateRoutes from './src/routes/DateRoute.js'; // Ensure correct capitalization
+// import taskRoutes from './src/routes/tasks.js'; // Ensure correct file name
 
-// Manually set the environment variables if dotenv is not working
-process.env.PORT = process.env.PORT || '5000';  // Set default port to 5000 if not in .env
-process.env.MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017';  // Set MongoDB URI
+// dotenv.config(); // Load environment variables
 
-// Log environment variables for debugging
-console.log('PORT:', process.env.PORT);  // Should log the port number
-console.log('MONGO_URI:', process.env.MONGO_URI);  // Should log the MongoDB URI
+// const app = express();
+// const PORT = process.env.PORT || 5000;
 
+// // Middleware
+// app.use(cors());
+// app.use(express.json());
+
+// // Routes
+// app.use('/api/date', dateRoutes);
+// app.use('/api/tasks', taskRoutes); // Correct import here
+
+// // Start Server
+// app.listen(PORT, () => {
+//   console.log(`Server is running on http://localhost:${PORT}`);
+// });
 import express from 'express';
-import cors from 'cors';
 import mongoose from 'mongoose';
+import cors from 'cors';
+import dotenv from 'dotenv';
 
-import dateRoutes from './src/routes/DateRoute.js';
-import taskRoutes from './src/routes/tasks.js';
+dotenv.config();  // Load environment variables
 
 const app = express();
+const PORT = process.env.PORT || 5000;
+const MONGO_URI = process.env.MONGO_URI;
 
-// MongoDB connection
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('Connected to MongoDB'))
-  .catch((err) => console.log('Error connecting to MongoDB:', err));
+if (!MONGO_URI) {
+  console.error("❌ MONGO_URI is not defined. Check your .env file.");
+  process.exit(1); // Stop the server if no URI is found
+}
 
 // Middleware
-app.use(cors());
 app.use(express.json());
+app.use(cors());
 
-// Logging Middleware
-app.use((req, res, next) => {
-  console.log(`Request URL: ${req.url}`);
-  next();
-});
+// Connect to MongoDB
+mongoose
+  .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log('✅ Connected to MongoDB');
+    startServer();
+  })
+  .catch((error) => {
+    console.error('❌ MongoDB connection error:', error);
+    process.exit(1); // Stop the server if connection fails
+  });
 
-// Routes
-app.use('/api/date', dateRoutes);
-app.use('/api/tasks', taskRoutes);
-
-// Start Server
-app.listen(process.env.PORT, () => {
-  console.log(`Server is running on http://localhost:${process.env.PORT}`);
-});
+// Function to start the server only after MongoDB connects
+const startServer = () => {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+  });
+};

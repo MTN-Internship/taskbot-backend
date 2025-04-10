@@ -14,13 +14,14 @@
 // module.exports = Task;
 import mongoose from 'mongoose';
 
-// Define the Task schema
 const taskSchema = new mongoose.Schema({
-    date: { type: String, required: true },  // Date of the task
-    description: { type: String, required: true },  // Task description
-    // Add more fields as needed
-});
+  title: {
+    type: String,
+    required: true
+  },
+  description: String
+}, { timestamps: true });
 
-// Create and export the Task model
 const Task = mongoose.model('Task', taskSchema);
-export default Task;  // Use ES module export
+
+export default Task;

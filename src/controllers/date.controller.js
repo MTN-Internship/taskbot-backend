@@ -1,26 +1,27 @@
-// exports.getCurrentDate = (req, res) => {
-//     const currentDate = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
-//     res.json({ date: currentDate });
-// };
 
-// // Function to get the next day's date (New Addition)
-// exports.getNextDayDate = (req, res) => {
-//     const tomorrow = new Date();
-//     tomorrow.setDate(tomorrow.getDate() + 1);
-//     const nextDay = tomorrow.toISOString().split("T")[0]; // Format: YYYY-MM-DD
+const Task = require('../models/taskModel');  
 
-//     res.json({ date: nextDay });
-// };
-export const getCurrentDate = (req, res) => {
-    const currentDate = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
-    res.json({ date: currentDate });
+
+exports.createTask = async (req, res) => {
+  try {
+    const { message, answer } = req.body;
+
+    
+    const newTask = new Task({ message, answer });
+    await newTask.save();
+
+    res.status(201).json({ message: 'Task created successfully', task: newTask });
+  } catch (err) {
+    res.status(500).json({ message: 'Error creating task', error: err.message });
+  }
 };
 
-// Function to get the next day's date
-export const getNextDayDate = (req, res) => {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const nextDay = tomorrow.toISOString().split("T")[0]; // Format: YYYY-MM-DD
 
-    res.json({ date: nextDay });
+exports.getTasks = async (req, res) => {
+  try {
+    const tasks = await Task.find();
+    res.status(200).json({ tasks });
+  } catch (err) {
+    res.status(500).json({ message: 'Error retrieving tasks', error: err.message });
+  }
 };
